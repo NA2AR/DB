@@ -26,12 +26,18 @@ order by avg(t.duration)
 
 select count(*) from tracks t
 join album a on a.id = t.album_id 
-where a.id = (select id from album where release between '2019-01-01' and '2021-01-01')
+where a."release" BETWEEN '2020-01-01' AND '2021-01-01'
 
-select p2.name from performersalbum p
+select p2."name" from performersalbum p
 join performers p2 on p.performers_id = p2.id 
-join album a on p.album_id = a.id 
-where p2.name not like (select p2.name where a."release" between '2020-01-01' and '2021-01-01')
+where p2."name" not in (select p2."name" from performersalbum p
+						join performers p2 on p.performers_id = p2.id
+						join album a on p.album_id = a.id
+						where a."release" between '2020-01-01' and '2021-01-01'
+						group by p2."name" 
+						);
+						
+
 
 select distinct c2.name from collectiontracks c
 join collection c2 on c.collection_id = c2.id
